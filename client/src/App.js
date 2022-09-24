@@ -1,13 +1,33 @@
+import React, { useState, useEffect, createContext } from "react";
+import { fetchMatches } from "./utils/serviceProvider";
+import MatchList from "./component/MatchList";
+import PostMatch from "./component/PostMatch";
+import { filterAndSort } from "./utils/serviceProvider";
 
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
+export const userContext = createContext({})
 
-      </header>
-    </div>
+function App() {
+
+  const [matchData, setMatchData] = useState([])
+
+  useEffect(() => {
+    try {
+      fetchMatches().then(matchlist => setMatchData(matchlist)).catch((err) => console.log(err))
+    } catch (err) {
+      console.log(err)
+    }
+  }, [])
+
+
+  return (
+    <userContext.Provider value={{ matchData, setMatchData }}>
+      <div className="App">
+        <PostMatch></PostMatch>
+        <MatchList></MatchList>
+      </div>
+    </userContext.Provider>
   );
 }
 

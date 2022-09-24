@@ -1,34 +1,47 @@
 const MatchModel = require('../models/matches');
 
-
-async function getMatches(ctx) {
+async function allMatches(req, res) {
     try {
-        ctx.body = await MatchModel.find();
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.status = 500;
+        const result = await MatchModel.find()
+        res.send(result);
+        res.status(200);
+
+    } catch (error) {
+        res.status(500);
     }
 }
 
-async function postMatch(ctx) {
+
+async function getMatches(req, res) {
     try {
-        const createdObject = await MatchModel.create(ctx.request.body);
-        ctx.body = createdObject;
-        ctx.status = 201;
-    } catch (err) {
-        ctx.status = 500;
+        const result = await MatchModel.find({ user: req.user.id })
+        res.send(result);
+        res.status(200);
+
+    } catch (error) {
+        res.status(500);
     }
 }
 
-async function deleteMatch(ctx) {
+async function postMatch(req, res) {
     try {
-        const { id } = ctx.params;
-        await MatchModel.deleteOne({ where: { id: id } })
-
-        ctx.body = 'match deleted';
+        const createdObject = await MatchModel.create({ ...req.body, user: req.user.id });
+        res.json(createdObject);
+        res.status(201);
     } catch (err) {
-        ctx.status = 500;
+        res.status(400);
     }
 }
 
-module.exports = { getMatches, postMatch, deleteMatch };
+// async function deleteMatch(ctx) {
+//     try {
+//         const { id } = ctx.params;
+//         await MatchModel.deleteOne({ where: { id: id } })
+
+//         ctx.body = 'match deleted';
+//     } catch (err) {
+//         ctx.status = 500;
+//     }
+// }
+
+module.exports = { getMatches, postMatch, allMatches };

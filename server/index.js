@@ -1,17 +1,17 @@
-const Koa = require('koa');
-const app = new Koa();
-const cors = require('@koa/cors');
-const router = require('./router');
-const bodyParser = require('koa-bodyparser');
+const express = require('express')
+const app = express();
+const cors = require('cors');
+const router = require('./routes');
+
 
 
 app.use(cors());
-app.use(bodyParser());
-app.use(router.routes());
+app.use(express.json());
+app.use(router);
 
 
-
-
-const port = 3030;
-app.listen(port);
-console.log(`Server listening on port ${port}`);
+(async () => {
+    const PORT = 3030;
+    app.listen(PORT);
+    console.log(`Server listening on port ${PORT}`);
+})();
