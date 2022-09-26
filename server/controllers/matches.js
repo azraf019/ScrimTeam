@@ -1,6 +1,8 @@
+const asyncHandler = require('express-async-handler')
 const MatchModel = require('../models/matches');
+const userModel = require('../models/user');
 
-async function allMatches(req, res) {
+const allMatches = asyncHandler(async (req, res) => {
     try {
         const result = await MatchModel.find()
         res.send(result);
@@ -9,10 +11,10 @@ async function allMatches(req, res) {
     } catch (error) {
         res.status(500);
     }
-}
+})
 
 
-async function getMatches(req, res) {
+const getMatches = asyncHandler(async (req, res) => {
     try {
         const result = await MatchModel.find({ user: req.user.id })
         res.send(result);
@@ -21,9 +23,9 @@ async function getMatches(req, res) {
     } catch (error) {
         res.status(500);
     }
-}
+})
 
-async function postMatch(req, res) {
+const postMatch = asyncHandler(async (req, res) => {
     try {
         const createdObject = await MatchModel.create({ ...req.body, user: req.user.id });
         res.json(createdObject);
@@ -31,7 +33,7 @@ async function postMatch(req, res) {
     } catch (err) {
         res.status(400);
     }
-}
+})
 
 // async function deleteMatch(ctx) {
 //     try {
@@ -44,4 +46,29 @@ async function postMatch(req, res) {
 //     }
 // }
 
-module.exports = { getMatches, postMatch, allMatches };
+const deleteMatch = asyncHandler(async (req, res) => {
+    const match = await MatchModel.findById(req.params.id)
+
+    if (!match) {
+        res.status(400)
+        throw new Error('match not found')
+    }
+    // const user = await userModel.findById(req.user.id);
+    // // Check for user
+    // if (!user) {
+    //     res.status(401)
+    //     throw new Error('User not found')
+    // }
+
+    // Make sure the logged in user matches the goal user
+    // if (match.user.toString() !== req.user.id) {
+    //     res.status(401)
+    //     throw new Error('User not authorized')
+    // }
+
+    await match.remove()
+
+    res.status(200).json({ id: req.params.id })
+})
+
+module.exports = { getMatches, postMatch, allMatches, deleteMatch };
