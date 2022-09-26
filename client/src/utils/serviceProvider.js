@@ -2,7 +2,7 @@ const matchlistUrl = "http://localhost:3030/matches"
 
 export const fetchMatches = async () => {
     try {
-        const response = await fetch(matchlistUrl);
+        const response = await fetch("http://localhost:3030/allmatches");
         const jsonData = await response.json();
         return jsonData
     } catch (err) {

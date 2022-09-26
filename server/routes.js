@@ -10,9 +10,9 @@ router.get('/matches', protect, getMatches);
 router.post('/matches', protect, postMatch);
 router.delete('/matches/:id', protect, deleteMatch);
 
-router.post('/register', registerUser)
-router.post('/login', loginUser)
-router.get('/me', protect, getMe)
+router.post('/user/register', registerUser)
+router.post('/user/login', loginUser)
+router.get('/user/me', protect, getMe)
 
 
 
