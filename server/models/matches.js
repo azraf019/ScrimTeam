@@ -11,6 +11,8 @@ const matches = new mongoose.Schema({
     date: Date,
     server: String,
     description: String,
+    booking: Boolean,
+    email: String,
 
 });
 

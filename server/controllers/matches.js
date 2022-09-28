@@ -35,16 +35,32 @@ const postMatch = asyncHandler(async (req, res) => {
     }
 })
 
-// async function deleteMatch(ctx) {
-//     try {
-//         const { id } = ctx.params;
-//         await MatchModel.deleteOne({ where: { id: id } })
+const updateMatch = asyncHandler(async (req, res) => {
+    const match = await MatchModel.findById(req.params.id)
 
-//         ctx.body = 'match deleted';
-//     } catch (err) {
-//         ctx.status = 500;
-//     }
-// }
+    if (!match) {
+        res.status(400)
+        throw new Error('Match not found')
+    }
+
+    // Check for user
+    if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if (match.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
+    const updatedMatch = await MatchModel.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+    })
+
+    res.status(200).json(updatedMatch)
+})
 
 const deleteMatch = asyncHandler(async (req, res) => {
     const match = await MatchModel.findById(req.params.id)
@@ -53,22 +69,22 @@ const deleteMatch = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error('match not found')
     }
-    // const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user.id);
     // // Check for user
-    // if (!user) {
-    //     res.status(401)
-    //     throw new Error('User not found')
-    // }
+    if (!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
 
     // Make sure the logged in user matches the goal user
-    // if (match.user.toString() !== req.user.id) {
-    //     res.status(401)
-    //     throw new Error('User not authorized')
-    // }
+    if (match.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
 
     await match.remove()
 
     res.status(200).json({ id: req.params.id })
 })
 
-module.exports = { getMatches, postMatch, allMatches, deleteMatch };
+module.exports = { getMatches, postMatch, allMatches, deleteMatch, updateMatch };
